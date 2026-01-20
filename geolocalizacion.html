@@ -18,10 +18,34 @@
 </head>
 <body>
 
-    <h1>Hello, world!</h1>
+    <div class="container">
+        <h1>Hello, world!</h1>
+    
+        <div id="divMapa"></div>
+    
+        <form id="frmUbicaciones" method="POST">
+            <div class="mb-1">
+                <label for="txtDescripcion">Descripción:</label>
+                <textarea name="txtDescripcion" id="txtDescripcion" class="form-control" rows="3"></textarea>
+            </div>
+            <input type="text" id="hidLatitud" name="hidLatitud" readonly>
+            <input type="text" id="hidLongitud" name="hidLongitud" readonly>
+            <div class="mt-1 mb-1">
+                <button class="btn btn-primary">Guardar</button>
+                <button type="reset" class="btn btn-secondary">Cancelar</button>
+            </div>
+        </form>
 
-    <div id="divMapa"></div>
-
+        <table class="table table-sm table-bordered">
+            <thead>
+                <tr>
+                    <th>Descripción</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="tbodyUbicaciones"></tbody>
+        </table>
+    </div>
 
     <a href="https://wa.me/5218621248706?text=Hola" target="_blank" class="btn btn-success rounded rounded-circle btn-whatsapp" style="
         position: fixed;
@@ -35,14 +59,14 @@
     <script>
         const options = {
             enableHighAccuracy: true,
-            timeout: 5000,
+            timeout: 10000,
             maximumAge: 0,
         }
 
         function generarMapa(longitud, latitud) {
             $("#divMapa").html(`
 
-            <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d7007.717655366165!2d${longitud}!3d${latitud}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses!2smx!4v1728407007773!5m2!1ses!2smx" class="w-100" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d7007.717655366165!2d${longitud}!3d${latitud}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses!2smx!4v1728407007773!5m2!1ses!2smx" class="w-100" height="250" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
 
             `)
         }
@@ -60,13 +84,77 @@
             console.log(`More or less ${precision} meters.`)
 
             generarMapa(longitud, latitud)
+
+            $("#hidLatitud").val(latitud)
+            $("#hidLongitud").val(longitud)
         }
 
         function error(err) {
             console.warn(`ERROR(${err.code}): ${err.message}`)
         }
 
-        navigator.geolocation.getCurrentPosition(success, error, options)
+        function buscarUbicaciones() {
+            $.get("servicioUbicaciones.php?buscarUbicaciones", function (ubicaciones) {
+                $("#tbodyUbicaciones").html("")
+
+                for (let x in ubicaciones) {
+                    const ubicacion = ubicaciones[x]
+                    const id = ubicacion.idReporte
+                    const descripcion = ubicacion.descripcion
+
+                    $("#tbodyUbicaciones").append(`
+                    <tr>
+                        <td>${descripcion}</td>
+                        <td>
+                            <button class="btn btn-info btn-editar-ubicacion" data-id="${id}">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    `)
+                }
+            })
+        }
+
+        function obtenerUbicacion() {
+            navigator.geolocation.getCurrentPosition(success, error, options)
+        }
+
+        buscarUbicaciones()
+        obtenerUbicacion()
+
+        $("#frmUbicaciones")
+        .submit(function (event) {
+            event.preventDefault()
+
+            $.post("servicioUbicaciones.php?agregarUbicacion", $(this).serialize(), function (respuesta) {
+                if (respuesta) {
+                    alert("Ubicación registrada!")
+                }
+            })
+        })
+        .on("reset", function (event) {
+            obtenerUbicacion()
+        })
+
+        $(document).on("click", ".btn-editar-ubicacion", function (event) {
+            const idUbicacion = $(this).data("id")
+
+            $.get("servicioUbicaciones.php?editarUbicacion", {
+                id: idUbicacion
+            }, function (ubicaciones) {
+                const ubicacion = ubicaciones[0]
+                const descripcion = ubicacion.descripcion
+                const latitud = ubicacion.latitud
+                const longitud = ubicacion.longitud
+
+                $("#txtDescripcion").val(descripcion)
+                $("#hidLatitud").val(latitud)
+                $("#hidLongitud").val(longitud)
+
+                generarMapa(longitud, latitud)
+            })
+        })
     </script>
 
 </body>
