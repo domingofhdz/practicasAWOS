@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,13 +23,14 @@
     
         <div id="divMapa"></div>
     
-        <form id="frmUbicaciones" method="POST">
+        <form id="frmUbicacion" method="POST">
+            <input type="hidden" id="hidId" name="hidId">
             <div class="mb-1">
                 <label for="txtDescripcion">Descripción:</label>
                 <textarea name="txtDescripcion" id="txtDescripcion" class="form-control" rows="3"></textarea>
             </div>
-            <input type="text" id="hidLatitud" name="hidLatitud" readonly>
-            <input type="text" id="hidLongitud" name="hidLongitud" readonly>
+            <input type="hidden" id="hidLatitud" name="hidLatitud" readonly>
+            <input type="hidden" id="hidLongitud" name="hidLongitud" readonly>
             <div class="mt-1 mb-1">
                 <button class="btn btn-primary">Guardar</button>
                 <button type="reset" class="btn btn-secondary">Cancelar</button>
@@ -123,7 +124,7 @@
         buscarUbicaciones()
         obtenerUbicacion()
 
-        $("#frmUbicaciones")
+        $("#frmUbicacion")
         .submit(function (event) {
             event.preventDefault()
 
@@ -134,6 +135,7 @@
             })
         })
         .on("reset", function (event) {
+            $("#hidId").val("")
             obtenerUbicacion()
         })
 
@@ -144,10 +146,12 @@
                 id: idUbicacion
             }, function (ubicaciones) {
                 const ubicacion = ubicaciones[0]
+                const id = ubicacion.idReporte
                 const descripcion = ubicacion.descripcion
                 const latitud = ubicacion.latitud
                 const longitud = ubicacion.longitud
 
+                $("#hidId").val(id)
                 $("#txtDescripcion").val(descripcion)
                 $("#hidLatitud").val(latitud)
                 $("#hidLongitud").val(longitud)
