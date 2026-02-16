@@ -90,9 +90,11 @@ $(document).on("click", ".btn-eliminar", function (event) {
     }, function (respuesta) {
         if (respuesta == "correcto") {
             alert("Producto eliminado correctamente")
+            // Asincrono (Dentro de la APP)
             buscarProductos()
 
 
+            // En tiempo real para los demás clientes
             conn.send("buscar-productos")
 
 
@@ -103,13 +105,14 @@ $(document).on("click", ".btn-eliminar", function (event) {
 
 const conn = new WebSocket("ws://localhost:8080/chat")
 conn.onmessage = function (e) {
-    const data = e.data
-    console.log(data)
-    if (data == "buscar-productos") {
+    const comando = e.data
+    console.log(comando)
+    if (comando == "buscar-productos") {
         const toastLiveExample = document.getElementById("liveToast")
         const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
         toastBootstrap.show()
 
+        // Asincrono (Dentro de la APP)
         buscarProductos()
     }
 }
