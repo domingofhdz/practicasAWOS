@@ -37,12 +37,21 @@ if (isset($_GET["DATETIME"])) {
 require "conexion.php";
 require "enviarCorreo.php";
 
+/**
 $con = new Conexion(array(
   "tipo"       => "mysql",
   "servidor"   => "46.28.42.226",
   "bd"         => "u760464709_prueba_bd",
   "usuario"    => "u760464709_prueba_usr",
   "contrasena" => "|Au/mc*H2jH3"
+));
+*/
+$con = new Conexion(array(
+  "tipo"       => "mysql",
+  "servidor"   => "localhost",
+  "bd"         => "prueba",
+  "usuario"    => "root",
+  "contrasena" => "Test12345"
 ));
 
 if (isset($_GET["iniciarSesion"])) {
@@ -58,9 +67,8 @@ if (isset($_GET["iniciarSesion"])) {
   }
 }
 elseif (isset($_GET["productos"])) {
-  $select = $con->select("productos", "productos.id AS id, productos.nombre AS nombre, categorias.id AS idCategoria, categorias.nombre AS nombreCategoria, precio, existencias");
-  $select->innerjoin("categorias ON categorias.id = productos.categoria");
-  $select->orderby("id DESC");
+  $select = $con->select("view_productos_categorias");
+  $select->orderby("idProducto DESC");
   $select->limit(10);
 
   header("Content-Type: application/json");
@@ -70,13 +78,13 @@ elseif (isset($_GET["editarProducto"])) {
   $id = $_GET["id"];
 
   $select = $con->select("productos", "*");
-  $select->where("id", "=", $id);
+  $select->where("idProducto", "=", $id);
 
   header("Content-Type: application/json");
   echo json_encode($select->execute());
 }
 elseif (isset($_GET["categoriasCombo"])) {
-  $select = $con->select("categorias", "id AS value, nombre AS label");
+  $select = $con->select("categorias", "idCategoria AS value, nombre AS label");
   $select->orderby("nombre ASC");
   $select->limit(10);
 
@@ -101,31 +109,29 @@ elseif (isset($_GET["eliminarProducto"])) {
   }
 }
 elseif (isset($_GET["agregarProducto"])) {
-  $insert = $con->insert("productos", "nombre, categoria, precio, existencias");
-  $insert->value($_POST["txtNombre"]);
-  $insert->value($_POST["cboCategoria"]);
-  $insert->value($_POST["txtPrecio"]);
-  $insert->value($_POST["txtExistencias"]);
-  $insert->execute();
+  $prepare = $con->prepare("CALL agregarProducto(:nombre, :idCategoria, @idProducto, @nombreProducto, @idCategoria)");
+  $prepare->bindParam(":nombre", $_POST["txtNombre"]);
+  $prepare->bindParam(":idCategoria", $_POST["cboCategoria"]);
+  $prepare->execute();
 
-  $id = $con->lastInsertId();
+  # echo "correcto";
 
-  if (is_numeric($id)) {
-    echo $id;
+  $productoAgregado = array();
+
+  foreach ($con->query("SELECT @idProducto, @nombreProducto, @idCategoria;") as $producto) {
+    $productoAgregado = $producto;
   }
-  else {
-    echo "0";
-  }
+
+  header("Content-Type: application/json");
+  echo json_encode($productoAgregado);
 }
 elseif (isset($_GET["modificarProducto"])) {
-  $update = $con->update("productos");
-  $update->set("nombre", $_POST["txtNombre"]);
-  $update->set("categoria", $_POST["cboCategoria"]);
-  $update->set("precio", $_POST["txtPrecio"]);
-  $update->set("existencias", $_POST["txtExistencias"]);
-  $update->where("id", "=", $_POST["txtId"]);
+  $prepare = $con->prepare("CALL modificarProducto(:idProducto, :nombre, :idCategoria)");
+  $prepare->bindParam(":idProducto", $_POST["txtId"]);
+  $prepare->bindParam(":nombre", $_POST["txtNombre"]);
+  $prepare->bindParam(":idCategoria", $_POST["cboCategoria"]);
 
-  if ($update->execute()) {
+  if ($prepare->execute()) {
     echo "correcto";
   }
   else {

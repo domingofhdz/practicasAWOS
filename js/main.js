@@ -6,14 +6,12 @@ function buscarProductos() {
             const producto = productos[x]
     
             $("#tbodyProductos").append(`<tr>
-                <td>${producto.id}</td>
+                <td>${producto.idProducto}</td>
                 <td>${producto.nombre}</td>
-                <td>${producto.nombreCategoria}</td>
-                <td>${producto.precio}</td>
-                <td>${producto.existencias}</td>
+                <td>${producto.categoria}</td>
                 <td>
-                    <button class="btn btn-info btn-editar mb-1 me-1" data-id="${producto.id}">Editar</button>
-                    <button class="btn btn-danger btn-eliminar" data-id="${producto.id}">Eliminar</button>
+                    <button class="btn btn-info btn-editar mb-1 me-1" data-id="${producto.idProducto}">Editar</button>
+                    <button class="btn btn-danger btn-eliminar" data-id="${producto.idProducto}">Eliminar</button>
                 </td>
             </tr>`)
         }
@@ -49,8 +47,8 @@ $("#frmProducto").submit(function (event) {
     }
 
     $.post("servicio.php?agregarProducto", $(this).serialize(), function (respuesta) {
-        if (respuesta != "0") {
-            alert("Producto agregado correctamente")
+        if (Object.keys(respuesta).length) {
+            alert(`Producto ${respuesta["1"]} agregado correctamente`)
             $("#frmProducto").get(0).reset()
             buscarProductos()
 
@@ -70,11 +68,9 @@ $(document).on("click", ".btn-editar", function (event) {
     }, function (productos) {
         const producto = productos[0]
 
-        $("#txtId").val(producto.id)
+        $("#txtId").val(producto.idProducto)
         $("#txtNombre").val(producto.nombre)
-        $("#cboCategoria").val(producto.categoria)
-        $("#txtPrecio").val(producto.precio)
-        $("#txtExistencias").val(producto.existencias)
+        $("#cboCategoria").val(producto.idCategoria)
     })
 })
 
@@ -108,12 +104,12 @@ conn.onmessage = function (e) {
     const comando = e.data
     console.log(comando)
     if (comando == "buscar-productos") {
+        // Asincrono (Dentro de la APP)
+        buscarProductos()
+
         const toastLiveExample = document.getElementById("liveToast")
         const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
         toastBootstrap.show()
-
-        // Asincrono (Dentro de la APP)
-        buscarProductos()
     }
 }
 conn.onopen = function (e) {
