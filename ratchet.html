@@ -7,6 +7,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-4.0.0.min.js" integrity="sha256-OaVG6prZf4v69dPg6PhVattBXkcOWQB62pdZ3ORyrao=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous" defer></script>
+
+    <script src="js/ratchet.js" defer></script>
+
 </head>
 <body>
     <div class="container">
@@ -43,43 +46,5 @@
             </div>
         </div>
     </div>
-    <script>
-        function agregarMensaje(data) {
-            const mensaje = JSON.parse(data)
-            $(".div-chat").append(`<div style="background: ${mensaje.colorFondo}; color: ${mensaje.colorTexto};">
-                ${mensaje.usuario ? mensaje.usuario + ": " : ""}
-                ${mensaje.mensaje}
-            </div>`)
-        }
-        // Then some JavaScript in the browser:
-        const conn = new WebSocket("ws://localhost:8080/chat")
-        conn.onmessage = function (e) {
-            const data = e.data
-            console.log(data)
-            agregarMensaje(data)
-        }
-        conn.onopen = function (e) {
-            conn.send(JSON.stringify({
-                colorFondo: "yellow",
-                colorTexto: "black",
-                usuario: "",
-                mensaje: "Alguien se unió al chat."
-            }))
-        }
-
-        $("#frmMensaje").submit(function (event) {
-            event.preventDefault()
-            const mensaje = {
-                colorFondo: $("#colBg").val(),
-                colorTexto: $("#colTexto").val(),
-                usuario: $("#txtUsuario").val(),
-                mensaje: $("#txtMensaje").val()
-            }
-            const data = JSON.stringify(mensaje)
-            conn.send(data)
-            agregarMensaje(data)
-            $("#txtMensaje").val("")
-        })
-    </script>
 </body>
 </html>

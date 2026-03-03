@@ -104,7 +104,7 @@ conn.onmessage = function (e) {
     const comando = e.data
     console.log(comando)
     if (comando == "buscar-productos") {
-        // Asincrono (Dentro de la APP)
+        // Asíncrono (Dentro de la APP)
         buscarProductos()
 
         const toastLiveExample = document.getElementById("liveToast")
