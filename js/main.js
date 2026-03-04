@@ -32,6 +32,12 @@ $.get("servicio.php?categoriasCombo", function (categorias) {
     }
 })
 
+$("#btnCerrarSesion").click(function (event) {
+    $.get("servicio.php?cerrarSesion", function (respuesta) {
+        window.location = "login.html"
+    })
+})
+
 $("#frmProducto").submit(function (event) {
     event.preventDefault()
 

@@ -54,19 +54,37 @@ $con = new Conexion(array(
   "contrasena" => "Test12345"
 ));
 
-if (isset($_GET["iniciarSesion"])) {
-  $select = $con->select("usuarios", "id");
-  $select->where("usuario", "=", $_POST["usuario"]);
-  $select->where_and("contrasena", "=", $_POST["contrasena"]);
+session_start();
 
-  if (count($select->execute())) {
+$login = true;
+if (isset($_SESSION["login"])) {
+  $login = false;
+}
+
+if (isset($_GET["iniciarSesion"])) {
+  $select = $con->select("usuarios");
+  $select->where("usuario", "=", $_POST["txtUsuario"]);
+  $select->where_and("contrasena", "=", $_POST["txtContrasena"]);
+
+  $usuarios = $select->execute();
+
+  if (count($usuarios)) {
+    $usuario = $usuarios[0];
+
+    $_SESSION["login"]      = $usuario["idUsuario"];
+    $_SESSION["login-usr"]  = $usuario["usuario"];
+    $_SESSION["login-tipo"] = $usuario["tipo"];
+
     echo "correcto";
   }
   else {
     echo "error";
   }
 }
-elseif (isset($_GET["productos"])) {
+elseif (isset($_GET["cerrarSesion"])) {
+  session_destroy();
+}
+elseif (isset($_GET["productos"]) && $login) {
   $select = $con->select("view_productos_categorias");
   $select->orderby("idProducto DESC");
   $select->limit(10);
@@ -74,7 +92,7 @@ elseif (isset($_GET["productos"])) {
   header("Content-Type: application/json");
   echo json_encode($select->execute());
 }
-elseif (isset($_GET["editarProducto"])) {
+elseif (isset($_GET["editarProducto"]) && $login) {
   $id = $_GET["id"];
 
   $select = $con->select("productos", "*");
@@ -83,7 +101,7 @@ elseif (isset($_GET["editarProducto"])) {
   header("Content-Type: application/json");
   echo json_encode($select->execute());
 }
-elseif (isset($_GET["categoriasCombo"])) {
+elseif (isset($_GET["categoriasCombo"]) && $login) {
   $select = $con->select("categorias", "idCategoria AS value, nombre AS label");
   $select->orderby("nombre ASC");
   $select->limit(10);
@@ -97,7 +115,7 @@ elseif (isset($_GET["categoriasCombo"])) {
   header("Content-Type: application/json");
   echo json_encode($array);
 }
-elseif (isset($_GET["eliminarProducto"])) {
+elseif (isset($_GET["eliminarProducto"]) && $login) {
   $delete = $con->delete("productos");
   $delete->where("id", "=", $_POST["txtId"]);
 
@@ -108,7 +126,7 @@ elseif (isset($_GET["eliminarProducto"])) {
     echo "error";
   }
 }
-elseif (isset($_GET["agregarProducto"])) {
+elseif (isset($_GET["agregarProducto"]) && $login) {
   $prepare = $con->prepare("CALL agregarProducto(:nombre, :idCategoria, @idProducto, @nombreProducto, @idCategoria)");
   $prepare->bindParam(":nombre", $_POST["txtNombre"]);
   $prepare->bindParam(":idCategoria", $_POST["cboCategoria"]);
@@ -125,7 +143,7 @@ elseif (isset($_GET["agregarProducto"])) {
   header("Content-Type: application/json");
   echo json_encode($productoAgregado);
 }
-elseif (isset($_GET["modificarProducto"])) {
+elseif (isset($_GET["modificarProducto"]) && $login) {
   $prepare = $con->prepare("CALL modificarProducto(:idProducto, :nombre, :idCategoria)");
   $prepare->bindParam(":idProducto", $_POST["txtId"]);
   $prepare->bindParam(":nombre", $_POST["txtNombre"]);
