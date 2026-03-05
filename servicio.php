@@ -56,12 +56,16 @@ $con = new Conexion(array(
 
 session_start();
 
-$login = true;
+$login = false;
 if (isset($_SESSION["login"])) {
-  $login = false;
+  $login = true;
 }
 
-if (isset($_GET["iniciarSesion"])) {
+if (isset($_GET["sesion"])) {
+  header("Content-Type: application/json");
+  echo json_encode($_SESSION);
+}
+elseif (isset($_GET["iniciarSesion"])) {
   $select = $con->select("usuarios");
   $select->where("usuario", "=", $_POST["txtUsuario"]);
   $select->where_and("contrasena", "=", $_POST["txtContrasena"]);

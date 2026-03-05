@@ -1,5 +1,5 @@
 function buscarProductos() {
-    $.get("servicio.php?productos", function (productos) {
+    $.get("https://emails-cook-pubs-neck.trycloudflare.com/api-github/practicasAWOS/servicio.php?productos", function (productos) {
         $("#tbodyProductos").html("")
     
         for (let x in productos) {
@@ -20,7 +20,7 @@ function buscarProductos() {
 
 buscarProductos()
 
-$.get("servicio.php?categoriasCombo", function (categorias) {
+$.get("https://emails-cook-pubs-neck.trycloudflare.com/api-github/practicasAWOS/servicio.php?categoriasCombo", function (categorias) {
     $("#cboCategoria").html("")
 
     for (let x in categorias) {
@@ -32,8 +32,21 @@ $.get("servicio.php?categoriasCombo", function (categorias) {
     }
 })
 
+$.get("https://emails-cook-pubs-neck.trycloudflare.com/api-github/practicasAWOS/servicio.php?sesion", function (sesion) {
+    if (Object.keys(sesion).length) {
+        $("#btnCerrarSesion")
+        .show()
+        .css("visibility", "visible")
+    }
+    else if (sesion.length == 0) {
+        $("#btnIniciarSesion")
+        .show()
+        .css("visibility", "visible")
+    }
+})
+
 $("#btnCerrarSesion").click(function (event) {
-    $.get("servicio.php?cerrarSesion", function (respuesta) {
+    $.get("https://emails-cook-pubs-neck.trycloudflare.com/api-github/practicasAWOS/servicio.php?cerrarSesion", function (respuesta) {
         window.location = "login.html"
     })
 })
@@ -42,7 +55,7 @@ $("#frmProducto").submit(function (event) {
     event.preventDefault()
 
     if ($("#txtId").val()) {
-        $.post("servicio.php?modificarProducto", $(this).serialize(), function (respuesta) {
+        $.post("https://emails-cook-pubs-neck.trycloudflare.com/api-github/practicasAWOS/servicio.php?modificarProducto", $(this).serialize(), function (respuesta) {
             if (respuesta == "correcto") {
                 alert("Producto modificado correctamente")
                 $("#frmProducto").get(0).reset()
@@ -52,7 +65,7 @@ $("#frmProducto").submit(function (event) {
         return
     }
 
-    $.post("servicio.php?agregarProducto", $(this).serialize(), function (respuesta) {
+    $.post("https://emails-cook-pubs-neck.trycloudflare.com/api-github/practicasAWOS/servicio.php?agregarProducto", $(this).serialize(), function (respuesta) {
         if (Object.keys(respuesta).length) {
             alert(`Producto ${respuesta["1"]} agregado correctamente`)
             $("#frmProducto").get(0).reset()
@@ -69,7 +82,7 @@ $("#frmProducto").submit(function (event) {
 $(document).on("click", ".btn-editar", function (event) {
     const id = $(this).data("id")
 
-    $.get("servicio.php?editarProducto", {
+    $.get("https://emails-cook-pubs-neck.trycloudflare.com/api-github/practicasAWOS/servicio.php?editarProducto", {
         id: id
     }, function (productos) {
         const producto = productos[0]
@@ -87,7 +100,7 @@ $(document).on("click", ".btn-eliminar", function (event) {
         return
     }
 
-    $.post("servicio.php?eliminarProducto", {
+    $.post("https://emails-cook-pubs-neck.trycloudflare.com/api-github/practicasAWOS/servicio.php?eliminarProducto", {
         txtId: id
     }, function (respuesta) {
         if (respuesta == "correcto") {
