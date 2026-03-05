@@ -1,8 +1,10 @@
+const API = "http://localhost:81/api-github/practicasAWOS"
+
 const modalErrorLogin = new bootstrap.Modal("#exampleModal", {
     keyboard: false
 })
 
-$.get("https://emails-cook-pubs-neck.trycloudflare.com/api-github/practicasAWOS/servicio.php?sesion", function (sesion) {
+$.get(`${API}/servicio.php?sesion`, function (sesion) {
     if (Object.keys(sesion).length) {
         // Si inició sesión
     }
@@ -14,12 +16,13 @@ $.get("https://emails-cook-pubs-neck.trycloudflare.com/api-github/practicasAWOS/
 $("#frmLogin").submit(function (event) {
     event.preventDefault()
 
-    $.post("https://emails-cook-pubs-neck.trycloudflare.com/api-github/practicasAWOS/servicio.php?iniciarSesion", $(this).serialize(), function (respuesta) {
-        if (respuesta == "correcto") {
-            window.location = "index.html"
+    $.post(`${API}/servicio.php?iniciarSesion`, $(this).serialize(), function (respuesta) {
+        if (respuesta == "error") {
+            modalErrorLogin.show()
             return
         }
 
-        modalErrorLogin.show()
+        localStorage.setItem("jwt", respuesta)
+        window.location = "index.html"
     })
 })

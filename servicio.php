@@ -54,16 +54,35 @@ $con = new Conexion(array(
   "contrasena" => "Test12345"
 ));
 
-session_start();
 
-$login = false;
-if (isset($_SESSION["login"])) {
+require "firebase-php-jwt/vendor/autoload.php";
+
+$headers = getallheaders();
+
+$token = "";
+if (isset($headers["Authorization"])) {
+  $token = str_replace("Bearer ", "", $headers["Authorization"]);
+}
+
+try {
+  $decoded = Firebase\JWT\JWT::decode($token, new Firebase\JWT\Key("Test12345-----------------------------------------------", "HS256"));
+
+  $usuario = explode("/", $decoded->sub);
+  $id      = $usuario[0];
+  $usuario = $usuario[1];
+  $tipo    = $usuario[2];
+
   $login = true;
 }
+catch (Exception $error) {
+  $usuario = array();
+  $login   = false;
+}
+
 
 if (isset($_GET["sesion"])) {
   header("Content-Type: application/json");
-  echo json_encode($_SESSION);
+  echo json_encode($usuario);
 }
 elseif (isset($_GET["iniciarSesion"])) {
   $select = $con->select("usuarios");
@@ -75,18 +94,18 @@ elseif (isset($_GET["iniciarSesion"])) {
   if (count($usuarios)) {
     $usuario = $usuarios[0];
 
-    $_SESSION["login"]      = $usuario["idUsuario"];
-    $_SESSION["login-usr"]  = $usuario["usuario"];
-    $_SESSION["login-tipo"] = $usuario["tipo"];
+    $payload = [
+      "iat" => time(),
+      "exp" => time() + (60 * 60 * 24 * 7),
+      "sub" => $usuario["idUsuario"] . "/" . $usuario["usuario"] . "/" . $usuario["tipo"]
+    ];
+    $jwt = Firebase\JWT\JWT::encode($payload, "Test12345-----------------------------------------------", "HS256");
 
-    echo "correcto";
+    echo $jwt;
   }
   else {
     echo "error";
   }
-}
-elseif (isset($_GET["cerrarSesion"])) {
-  session_destroy();
 }
 elseif (isset($_GET["productos"]) && $login) {
   $select = $con->select("view_productos_categorias");
