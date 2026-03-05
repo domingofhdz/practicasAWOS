@@ -1,16 +1,17 @@
-const API = "http://localhost:81/api-github/practicasAWOS"
+const API = "https://carefully-eclipse-refresh-aircraft.trycloudflare.com/api-github/practicasAWOS"
 
 const modalErrorLogin = new bootstrap.Modal("#exampleModal", {
     keyboard: false
 })
 
 $.get(`${API}/servicio.php?sesion`, function (sesion) {
-    if (Object.keys(sesion).length) {
+    if (sesion.length) {
         // Si inició sesión
+
+        return
     }
-    else if (sesion.length == 0) {
-        // Si no inició sesión
-    }
+
+    // Si no inició sesión
 })
 
 $("#frmLogin").submit(function (event) {

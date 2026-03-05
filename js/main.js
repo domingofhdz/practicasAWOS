@@ -18,7 +18,7 @@ function buscarProductos() {
     })
 }
 
-const API = "http://localhost:81/api-github/practicasAWOS"
+const API = "https://carefully-eclipse-refresh-aircraft.trycloudflare.com/api-github/practicasAWOS"
 
 $.ajaxSetup({
     headers: {
