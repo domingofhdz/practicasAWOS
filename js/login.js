@@ -1,6 +1,6 @@
 // La URL de la API y endpoints cambialos según el tunnel, hosting, local o ubicación del proyecto de la aplicación web
 // URL de la API
-const API = "http://localhost:81/api-github/practicasAWOS"
+const API = "http://localhost:81/github/practicasAWOS"
 
 // Añade a toda petición que se realice, el header que contiene el JWT, obtenido de un almacenamiento muy persistente
 $.ajaxSetup({

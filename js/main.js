@@ -18,7 +18,7 @@ function buscarProductos() {
     })
 }
 
-const API = "http://localhost:81/api-github/practicasAWOS"
+const API = "http://localhost:81/github/practicasAWOS"
 
 // Añade a toda petición que se realice, el header que contiene el JWT, obtenido de un almacenamiento muy persistente
 $.ajaxSetup({
@@ -56,6 +56,7 @@ $.get(`${API}/servicio.php?categoriasCombo`, function (categorias) {
     }
 })
 
+// Solución de puntos extra
 window.addEventListener("pageshow", function(event) {
     if (event.persisted) {
         if (!localStorage.getItem("jwt")) {
