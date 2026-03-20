@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reportes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous" defer></script>
+    <script src="https://code.jquery.com/jquery-4.0.0.min.js" integrity="sha256-OaVG6prZf4v69dPg6PhVattBXkcOWQB62pdZ3ORyrao=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <script src="js/geolocalizacion.js" defer></script>
+    <style>
+        .btn-whatsapp:hover {
+            background: none;
+            border: solid 2px green !important;
+            color: green !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="text-end mt-1">
+            <a id="btnIniciarSesion" class="btn btn-outline-info" style="visibility: hidden;" href="login.html">Iniciar Sesión</a>
+        </div>
+        <div class="text-end mt-1 mb-2">
+            <button id="btnCerrarSesion" class="btn btn-outline-danger" style="visibility: hidden;">Cerrar Sesión</button>
+        </div>
+
+        <div id="divMapa" style="height: 250px;"></div>
+    
+        <form id="frmUbicacion" method="POST">
+            <input type="hidden" id="hidId" name="hidId">
+            <div class="mb-1">
+                <label for="txtDescripcion">Descripción:</label>
+                <textarea name="txtDescripcion" id="txtDescripcion" class="form-control" rows="3"></textarea>
+            </div>
+            <input type="hidden" id="hidLatitud" name="hidLatitud" readonly>
+            <input type="hidden" id="hidLongitud" name="hidLongitud" readonly>
+            <div class="mt-1 mb-1">
+                <button class="btn btn-primary">Guardar</button>
+                <button type="reset" class="btn btn-secondary">Cancelar</button>
+            </div>
+        </form>
+
+        <table class="table table-sm table-bordered">
+            <thead>
+                <tr>
+                    <th>Descripción</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="tbodyUbicaciones"></tbody>
+        </table>
+    </div>
+
+    <a href="https://wa.me/5218626282470?text=/aprender" target="_blank" class="btn btn-success rounded rounded-circle btn-whatsapp" style="position: fixed; bottom: 5px; right: 5px; font-size: 2em;">
+        <i class="bi bi-whatsapp"></i>
+    </a>
+</body>
+</html>
